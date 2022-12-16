@@ -46,7 +46,8 @@ const char* kDefaultDataTypes("da");
 const bool kDefaultRoundingFlag(false);
 const WarningType kDefaultWarningType(kExit);
 const int kDefaultNumColumn(1);
-
+  
+//  一般输出很耗内存，所以我们可以通过缓存的方式一次性全部打印出来。ifstream是输入文件流，是一种输入流， std::ifstream x; 。
 void PrintUsage(std::ostream* stream) {
   // clang-format off
   *stream << std::endl;
