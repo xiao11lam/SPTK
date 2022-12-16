@@ -50,7 +50,13 @@ const int kDefaultNumColumn(1);
 //  一般输出很耗内存，所以我们可以通过缓存的方式一次性全部打印出来。ifstream是输入文件流，是一种输入流， std::ifstream x; 。
 void PrintUsage(std::ostream* stream) {
   // clang-format off
+  
+  // << 表示输出， >> 表示输入， 这里都是格式化I/O主要是非格式化会用到一些像是常用的输入函数像是get、read、getline，gcount等等函数就是一些unformated input。输出像是put、write
+  // std::cout << x << std::end;
+  // std::cin >> x;
+  
   *stream << std::endl;
+  // 相当于我们把这些东西都放到了*stream这个流里面了。
   *stream << " x2x - data type transformation" << std::endl;
   *stream << std::endl;
   *stream << "  usage:" << std::endl;
