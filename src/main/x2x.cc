@@ -18,18 +18,25 @@
 #include <climits>    // INT_MIN, INT_MAX, SCHAR_MIN, SCHAR_MAX, etc.
 #include <cstdint>    // int8_t, int16_t, int32_t, int64_t, etc.
 #include <cstring>    // std::strncmp
-#include <fstream>    // std::ifstream
+#include <fstream>    // std::ifstream  输入流的头文件，支持输入流
 #include <iomanip>    // std::setw
-#include <iostream>   // std::cerr, std::cin, std::cout, std::endl, etc.
+#include <iostream>   // std::cerr, std::cin, std::cout, std::endl, etc. 
+// 这里是加了系统io的头文件
 #include <sstream>    // std::ostringstream
 #include <stdexcept>  // std::invalid_argument
-#include <string>     // std::stold, std::string
+#include <string>     // std::stold, std::string  为了支持我们读取字符串
 
+
+// 这里引用双引号的原因是系统会从当前的目录中寻找头文件，不像<>从系统环境变量中找，这里的头文件是自己编写的，所以用了""，而且要加后缀，原生的头文件<>不需要。
 #include "Getopt/getoptwin.h"
 #include "SPTK/utils/int24_t.h"
 #include "SPTK/utils/sptk_utils.h"
 #include "SPTK/utils/uint24_t.h"
 
+
+
+// 这个是名字空间，防止命名重复问题，里面包含所有的东西包含在这个namespace里面的东西，如果没有名字空间的话，就可能会在不同的脚本中发生命名冲突，出现redefinition问题。
+// 在C++中如果不定义一个东西处于那个命名空间，那么就会把他放在全局空间里面。
 namespace {
 
 enum NumericType {
@@ -49,14 +56,17 @@ const int kDefaultNumColumn(1);
   
 //  一般输出很耗内存，所以我们可以通过缓存的方式一次性全部打印出来。ifstream是输入文件流，是一种输入流， std::ifstream x; 。
 void PrintUsage(std::ostream* stream) {
+  // stream 其实是一个形式参数，当我们要调用这个参数的时候需要喂入实参数。
+  
+  
   // clang-format off
   
   // << 表示输出， >> 表示输入， 这里都是格式化I/O主要是非格式化会用到一些像是常用的输入函数像是get、read、getline，gcount等等函数就是一些unformated input。输出像是put、write
-  // std::cout << x << std::end;
+  // std::cout << x << std::end; 这里std::out输入终端里面， c是character的意思，字符的意思。
   // std::cin >> x;
-  
+  // 我们构造了一个内存流指针stream，相当于我们把这些东西都放到了*stream这个流里面了。
+
   *stream << std::endl;
-  // 相当于我们把这些东西都放到了*stream这个流里面了。
   *stream << " x2x - data type transformation" << std::endl;
   *stream << std::endl;
   *stream << "  usage:" << std::endl;
@@ -1222,6 +1232,15 @@ class DataTransformWrapper {
  * @param[in] argv Argument vector.
  * @return 0 on success, 1 on failure.
  */
+
+
+// main函数是最后的执行函数，一个程序一定要包含main函数，这是C++和底层达成的协议，这是操作系统将要调用的函数。main函数返回的类型一定是int。C++规定有两种形式写main
+// 1. int main()
+// 2. int main(int argc, char* argv[]) 这里面包含两个形参，一个是int，一个是argv[]其实是一个char*类型的一种数组，形参。这是约定俗成的。可以改变那个argc，argv[]的名称
+// 但是要保证类型不变就行！
+//只有两种形式！！！
+
+
 int main(int argc, char* argv[]) {
   bool rounding_flag(kDefaultRoundingFlag);
   WarningType warning_type(kDefaultWarningType);
@@ -1338,5 +1357,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  // 0 在这里表示正常返回。0会返回给操作系统。main函数可以没有return 0；这个语句，系统默认会帮你加上。
   return 0;
 }
