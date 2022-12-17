@@ -36,7 +36,10 @@
 
 
 // 这个是名字空间，防止命名重复问题，里面包含所有的东西包含在这个namespace里面的东西，如果没有名字空间的话，就可能会在不同的脚本中发生命名冲突，出现redefinition问题。
-// 在C++中如果不定义一个东西处于那个命名空间，那么就会把他放在全局空间里面。
+// 在C++中如果不定义一个东西处于那个命名空间，那么就会把他放在全局空间里面。unnamed namespace / anonymous namespace, 
+// It's use is to make functions/objects/etc accessible only within that file. It's almost the same as static in C.
+
+
 namespace {
 
 enum NumericType {
