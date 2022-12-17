@@ -52,23 +52,26 @@ enum NumericType {
 enum WarningType { kIgnore = 0, kWarn, kExit, kNumWarningTypes };
 
 const int kBufferSize(128);
+
+// char字符串类型，能取256种数据
 const char* kDefaultDataTypes("da");
 const bool kDefaultRoundingFlag(false);
 const WarningType kDefaultWarningType(kExit);
 const int kDefaultNumColumn(1);
   
 //  一般输出很耗内存，所以我们可以通过缓存的方式一次性全部打印出来。ifstream是输入文件流，是一种输入流， std::ifstream x; 。
+
 void PrintUsage(std::ostream* stream) {
   // stream 其实是一个形式参数，当我们要调用这个参数的时候需要喂入实参数。
-  
+  // 这里* stream代表了stream是个指针，这里std::ostream代表了指针的长度。
   
   // clang-format off
   
-  // << 表示输出， >> 表示输入， 这里都是格式化I/O主要是非格式化会用到一些像是常用的输入函数像是get、read、getline，gcount等等函数就是一些unformated input。输出像是put、write
-  // std::cout << x << std::end; 这里std::out输入终端里面， c是character的意思，字符的意思。
-  // std::cin >> x;
-  // 我们构造了一个内存流指针stream，相当于我们把这些东西都放到了*stream这个流里面了。
-
+//   << 表示输出， >> 表示输入， 这里都是格式化I/O主要是非格式化会用到一些像是常用的输入函数像是get、read、getline，gcount等等函数就是一些unformated input。输出像是put、write
+//   std::cout << x << std::end; 这里std::out输入终端里面， c是character的意思，字符的意思。
+//   std::cin >> x; printf 是C语言的IO
+//   我们构造了一个内存流指针stream，相当于我们把这些东西都放到了*stream这个流里面了。
+// 这里*stream代表了解除引用，取到该指针所指向的值。
   *stream << std::endl;
   *stream << " x2x - data type transformation" << std::endl;
   *stream << std::endl;
@@ -114,6 +117,8 @@ class DataTransformInterface {
 template <typename T1, typename T2>
 class DataTransform : public DataTransformInterface {
  public:
+
+  // 这里先找到print_format的地址获取到了print_format的地址
   DataTransform(const std::string& print_format, int num_column,
                 NumericType input_numeric_type, WarningType warning_type,
                 bool rounding, bool is_ascii_input, bool is_ascii_output,
@@ -133,6 +138,7 @@ class DataTransform : public DataTransformInterface {
   }
 
   virtual bool Run(std::istream* input_stream) const {
+    // char表示基本的字符信息类型
     char buffer[kBufferSize];
     int index(0);
     for (;; ++index) {
@@ -181,6 +187,7 @@ class DataTransform : public DataTransformInterface {
               is_clipped = true;
             }
           } else if (kFloatingPoint == input_numeric_type_) {
+            // 这里static_cast<long double其实是个布尔值
             if (static_cast<long double>(input_data) <
                 static_cast<long double>(minimum_value_)) {
               output_data = minimum_value_;
@@ -192,7 +199,7 @@ class DataTransform : public DataTransformInterface {
             }
           }
         }
-
+        // if 语句这里
         // Rounding.
         if (rounding_ && !is_clipped) {
           if (0.0 < input_data) {
@@ -217,6 +224,7 @@ class DataTransform : public DataTransformInterface {
           return false;
         }
         std::cout << buffer;
+        // 我们通常把常量放在左边，如果为了比较逻辑，变量是右值，放在右边。避免变量问题。
         if (0 == (index + 1) % num_column_) {
           std::cout << std::endl;
         } else {
@@ -238,6 +246,7 @@ class DataTransform : public DataTransformInterface {
 
  private:
   const std::string print_format_;
+  // const在这里限定表示是个常量，表示这个整数是不能被修改的，就是只读的意思
   const int num_column_;
   const NumericType input_numeric_type_;
   const WarningType warning_type_;
@@ -253,12 +262,16 @@ class DataTransform : public DataTransformInterface {
 
 class DataTransformWrapper {
  public:
+  // 这里通过&我们相当于传入了一个空指针，这样我们又不用担心空指针的问题，这里叫引用，但是指针和引用本身就是类似的。input_data_type还是个地址。这里加上const的原因是我们不希望后面
+  // 给这个值错误赋值，导致错误，不然的话编译器就会报错。
   DataTransformWrapper(const std::string& input_data_type,
                        const std::string& output_data_type,
                        const std::string& given_print_format, int num_column,
                        WarningType warning_type, bool given_rounding_flag)
       : data_transform_(NULL) {
     std::string print_format(given_print_format);
+    // 所以说这里就是input_data_type的值是const不会报错。这种常量引用但是推荐的，能够快速拷贝。防止修改。一般是结构体复制成本比较高才这么搞像是const int& parm是没必要的
+    // 完全可以是int param是因为int才4个字节，但是地址是8个所以这个时候没必要。
     if (print_format.empty() && "a" == output_data_type) {
       if ("c" == input_data_type || "s" == input_data_type ||
           "h" == input_data_type || "i" == input_data_type) {
