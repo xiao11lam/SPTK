@@ -70,7 +70,7 @@ void PrintUsage(std::ostream* stream) {
 //   << 表示输出， >> 表示输入， 这里都是格式化I/O主要是非格式化会用到一些像是常用的输入函数像是get、read、getline，gcount等等函数就是一些unformated input。输出像是put、write
 //   std::cout << x << std::end; 这里std::out输入终端里面， c是character的意思，字符的意思。
 //   std::cin >> x; printf 是C语言的IO
-//   我们构造了一个内存流指针stream，相当于我们把这些东西都放到了*stream这个流里面了。
+//   我们构造了一个内存流指针stream，相当于我们把这些东西都放到了*stream这个流里面了。如果对象很大的话，我们就需要。
 // 这里*stream代表了解除引用，取到该指针所指向的值。
   *stream << std::endl;
   *stream << " x2x - data type transformation" << std::endl;
@@ -138,8 +138,8 @@ class DataTransform : public DataTransformInterface {
   }
 
   virtual bool Run(std::istream* input_stream) const {
-    // char表示基本的字符信息类型
     char buffer[kBufferSize];
+    // char表示基本的字符信息类型, 这里是一串字符串数组长度是kBufferSize：就是128个元素。我们要声明这个叫“char”的变量长度是kBufferSize。这是约定俗成的。
     int index(0);
     for (;; ++index) {
       // Read.
@@ -245,8 +245,8 @@ class DataTransform : public DataTransformInterface {
   }
 
  private:
-  const std::string print_format_;
-  // const在这里限定表示是个常量，表示这个整数是不能被修改的，就是只读的意思
+  const std::string print_format_; // 这里定义了一个字符串叫print_format_
+  // const在这里限定表示是个常量，表示这个整数是不能被修改的，就是只读的意思,
   const int num_column_;
   const NumericType input_numeric_type_;
   const WarningType warning_type_;
@@ -1290,6 +1290,7 @@ int main(int argc, char* argv[]) {
       }
       case 'c': {
         if (!sptk::ConvertStringToInteger(optarg, &num_column) ||
+            // num_column事实上是个值
             num_column <= 0) {
           std::ostringstream error_message;
           error_message
@@ -1321,6 +1322,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
+
+  // 这里定义了一个const指针，这里表示不能通过修改input_file(NULL)的值来修改其指向的参数大小。
   const char* input_file(NULL);
   for (int i(argc - optind); 1 <= i; --i) {
     const char* arg(argv[argc - i]);
@@ -1354,6 +1357,7 @@ int main(int argc, char* argv[]) {
   std::istream& input_stream(ifs.fail() ? std::cin : ifs);
 
   const std::string input_data_type(data_types.substr(0, 1));
+  // 这里定义了了一个叫input_data_type的string,里面的值是data_types.substr(0, 1)
   const std::string output_data_type(data_types.substr(1, 1));
   DataTransformWrapper data_transform(input_data_type, output_data_type,
                                       print_format, num_column, warning_type,

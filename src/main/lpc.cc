@@ -19,7 +19,7 @@
 #include <iomanip>   // std::setw
 #include <iostream>  // std::cerr, std::cin, std::cout, std::endl, etc.
 #include <sstream>   // std::ostringstream
-#include <vector>    // std::vector
+#include <vector>    // std::vector    数组是关注于性能的类型，vector是标准库之一的类模板。vector是种序列容器。这里是头文件
 
 #include "Getopt/getoptwin.h"
 #include "SPTK/analysis/autocorrelation_analysis.h"
@@ -246,7 +246,15 @@ int main(int argc, char* argv[]) {
   const int input_length(kWaveform == input_format ? frame_length
                                                    : frame_length / 2 + 1);
   const int output_length(num_order + 1);
+
+
+  // 我们这里是个vector，并且我们可以动态改变其长度，可以自由改变。可以自由插入，修改，但是耗费更多性能。这里我们定义了一个vector的double类型的模板，类型是 std::vector<double>。像是数组int a[3]其实是不能复制的
+  // 但是vector可以，可以复制。而且数组的值的个数已经确定了，不能修改了。
+  // 对数组赋值这里是 int a[3] = {1, 2, 3}; , 对vector赋值是 std::vector<int> x = {1, 2, 3}; 其实他们很像的。 vector是模拟数组的而且更容易用。
+
   std::vector<double> input(input_length);
+  // 这里std::vector<double>初始化了一个叫input的容器，包含input_length个元素。
+
   std::vector<double> autocorrelation(output_length);
   std::vector<double> linear_predictive_coefficients(output_length);
 

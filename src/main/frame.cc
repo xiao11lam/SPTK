@@ -63,6 +63,7 @@ void PrintUsage(std::ostream* stream) {
 }
 
 bool WriteData(const std::vector<double>& data, bool zero_mean) {
+  // 这里的.size()是为了获取vector data 的内部元素个数。
   const int length(static_cast<int>(data.size()));
   if (zero_mean) {
     std::vector<double> processed_data(length);

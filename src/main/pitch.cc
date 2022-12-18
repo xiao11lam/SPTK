@@ -369,6 +369,7 @@ int main(int argc, char* argv[]) {
 
   switch (output_format) {
     case kPitch: {
+      // 这里的begin指的是第一个元素，这个f0 vector的第一个元素。
       std::transform(f0.begin(), f0.end(), f0.begin(),
                      [sampling_rate_in_hz](double x) {
                        return (0.0 < x) ? sampling_rate_in_hz / x : 0.0;
@@ -380,6 +381,7 @@ int main(int argc, char* argv[]) {
       break;
     }
     case kLogF0: {
+      // 这里的end指的是最后一个元素. 
       std::transform(f0.begin(), f0.end(), f0.begin(), [](double x) {
         return (0.0 < x) ? std::log(x) : sptk::kLogZero;
       });
