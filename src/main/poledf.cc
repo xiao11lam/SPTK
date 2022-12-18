@@ -187,6 +187,7 @@ int main(int argc, char* argv[]) {
   }
 
   // Open stream for reading filter coefficients.
+  // ifstream 是用于输入的,不同于ofstrem用于输出,fstream是同时接受输入和输出.
   std::ifstream ifs1;
   ifs1.open(filter_coefficients_file, std::ios::in | std::ios::binary);
   if (ifs1.fail()) {

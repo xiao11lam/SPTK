@@ -113,6 +113,8 @@ class DataTransformInterface {
   }
   virtual bool Run(std::istream* input_stream) const = 0;
 };
+// 这里的;表示这个语句的结束.分号的作用是标志一个语句的结束.
+
 
 template <typename T1, typename T2>
 class DataTransform : public DataTransformInterface {
@@ -134,6 +136,8 @@ class DataTransform : public DataTransformInterface {
         maximum_value_(maximum_value) {
   }
 
+  //这里没有分号,表示这是复合语句.
+
   ~DataTransform() {
   }
 
@@ -141,6 +145,8 @@ class DataTransform : public DataTransformInterface {
     char buffer[kBufferSize];
     // char表示基本的字符信息类型, 这里是一串字符串数组长度是kBufferSize：就是128个元素。我们要声明这个叫“char”的变量长度是kBufferSize。这是约定俗成的。
     int index(0);
+    // 这里;代表空语句就是什么也不做的意思,通常和循环语句联系在一起.
+
     for (;; ++index) {
       // Read.
       T1 input_data;
@@ -1345,7 +1351,7 @@ int main(int argc, char* argv[]) {
       return 1;
     }
   }
-
+  // ifstream 是用于输入的,不同于ofstrem用于输出,fstream是同时接受输入和输出.
   std::ifstream ifs;
   ifs.open(input_file, std::ios::in | std::ios::binary);
   if (ifs.fail() && NULL != input_file) {

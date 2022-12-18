@@ -170,8 +170,9 @@ int main(int argc, char* argv[]) {
     const int option_char(
         getopt_long_only(argc, argv, "a:p:s:L:H:o:h", long_options, NULL));
     if (-1 == option_char) break;
-
+    // switch(条件)语句 , switch实现分支语句最核心的是case,我们可以通过case语句来实现,以及default标签.
     switch (option_char) {
+        // 这里就是指的是当这个option_char等于"a"的种种情况下的case,case后面一般是常量表达式就是一个值,用来匹配switch里面的条件.
       case 'a': {
         const int min(0);
         const int max(static_cast<int>(
@@ -187,6 +188,8 @@ int main(int argc, char* argv[]) {
           return 1;
         }
         algorithm = static_cast<sptk::PitchExtraction::Algorithms>(tmp);
+
+        // break主要用在switch或者循环语句里面,可以跳出当前的switch.执行switch下面的代码.没有的话会继续运行下面的条件代码,我们叫fall through.fall through一般很少考虑.
         break;
       }
       case 'p': {
@@ -298,6 +301,7 @@ int main(int argc, char* argv[]) {
         PrintUsage(&std::cout);
         return 0;
       }
+        // 这里表示无论输入什么值,那个值只要不是我们需要的都会报出这个错误,这是默认分支.因为如果之前满足条件,很早就break出去了.
       default: {
         PrintUsage(&std::cerr);
         return 1;
@@ -354,6 +358,7 @@ int main(int argc, char* argv[]) {
   {
     double tmp;
     while (sptk::ReadStream(&tmp, &input_stream)) {
+      // 这里满足这个就继续执行,不满足就跳出
       waveform.push_back(tmp);
     }
   }
@@ -381,7 +386,7 @@ int main(int argc, char* argv[]) {
       break;
     }
     case kLogF0: {
-      // 这里的end指的是最后一个元素. 
+      // 这里的end指的是最后一个元素.
       std::transform(f0.begin(), f0.end(), f0.begin(), [](double x) {
         return (0.0 < x) ? std::log(x) : sptk::kLogZero;
       });
