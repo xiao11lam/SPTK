@@ -69,7 +69,11 @@ void PrintUsage(std::ostream* stream) {
   *stream << "               to search for [Hz]" << std::endl;
   *stream << "       -H H  : maximum fundamental frequency (double)[" << std::setw(5) << std::right << kDefaultUpperF0                   << "][    L <  H <  500*s ]" << std::endl;  // NOLINT
   *stream << "               to search for [Hz]" << std::endl;
+  // RAPT 是时域上经典的方法。
+  // YIN and RAPT are well-known time-domain methods that estimate pitch directly from the signal waveform using autocorrelation.
   *stream << "       -t0 t : voicing threshold for RAPT    (double)[" << std::setw(5) << std::right << kDefaultVoicingThresholdForRapt   << "][ -0.6 <= t <= 0.7   ]" << std::endl;  // NOLINT
+  // SWIPE is a harmonic comb pitch estimation method with cosine-shaped teeth that smoothly connects harmonic peaks with sub-harmonic valleys, and another feature is that 
+  // it only uses the first few significant harmonics of the signal. 这是一种频域上的一种方法。
   *stream << "       -t1 t : voicing threshold for SWIPE'  (double)[" << std::setw(5) << std::right << kDefaultVoicingThresholdForSwipe  << "][  0.2 <= t <= 0.5   ]" << std::endl;  // NOLINT
   *stream << "       -t2 t : voicing threshold for REAPER  (double)[" << std::setw(5) << std::right << kDefaultVoicingThresholdForReaper << "][ -0.5 <= t <= 1.6   ]" << std::endl;  // NOLINT
   *stream << "       -t3 t : voicing threshold for WORLD   (double)[" << std::setw(5) << std::right << kDefaultVoicingThresholdForWorld  << "][ 0.02 <= t <= 0.2   ]" << std::endl;  // NOLINT
