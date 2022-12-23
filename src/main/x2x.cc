@@ -42,6 +42,19 @@
 
 namespace {
 
+/*
+ *
+ *
+ * 枚举(enum) ：一种取值受限的特殊类型
+– 分为无作用域枚举与有作用域枚举（ C++11 起）两种
+– 枚举项缺省使用 0 初始化，依次递增，可以使用常量表达式来修改缺省值
+– 可以为枚举指定底层类型，表明了枚举项的尺寸
+– 无作用域枚举项可隐式转换为整数值；也可用 static_cast 在枚举项与整数值间转换
+– 注意区分枚举的定义与声明
+
+ */
+
+
 enum NumericType {
   kUnknown = 0,
   kSignedInteger,
@@ -109,6 +122,7 @@ void PrintUsage(std::ostream* stream) {
 
 class DataTransformInterface {
  public:
+  // public 继承：描述 是一个 的关系
   virtual ~DataTransformInterface() {
   }
   virtual bool Run(std::istream* input_stream) const = 0;
@@ -117,10 +131,18 @@ class DataTransformInterface {
 
 
 template <typename T1, typename T2>
+
+
+//使用 template 关键字引入模板： template<typename T> void fun(T) {...}
+//– 函数模板的声明与定义
+//– typename 关键字可以替换为 class ，含义相同
+//– 函数模板中包含了两对参数：函数形参 / 实参；模板形参 / 实参
+
+
 class DataTransform : public DataTransformInterface {
  public:
 
-  // 这里先找到print_format的地址获取到了print_format的地址
+  // 这里先找到print_format的地址获取到了print_format的地址, & – 取地址操作符, * – 解引用操作符
   DataTransform(const std::string& print_format, int num_column,
                 NumericType input_numeric_type, WarningType warning_type,
                 bool rounding, bool is_ascii_input, bool is_ascii_output,
@@ -155,7 +177,24 @@ class DataTransform : public DataTransformInterface {
         *input_stream >> word;
         if (word.empty()) break;
         try {
+          // C++ 中的处理方法：通过关键字 try/catch/throw 引入异常处理机制
+//          异常触发时的系统行为 栈展开 ——
+//          – 抛出异常后续的代码不会被执行
+//          – 局部对象会按照构造相反的顺序自动销毁
+//          – 系统尝试匹配相应的 catch 代码段
           input_data = std::stold(word);
+          /*
+           * ●
+              try / catch 语句块
+              – 一个 try 语句块后面可以跟一到多个 catch 语句块
+              – 每个 catch 语句块用于匹配一种类型的异常对象
+              – catch 语句块的匹配按照从上到下进行
+              – 使用 catch(...) 匹配任意异常
+              – 在 catch 中调用 throw 继续抛出相同的异常
+              ● 在一个异常未处理完成时抛出新的异常会导致程序崩溃
+              – 不要在析构函数或 operator delete 函数重载版本中抛出异常
+              – 通常来说， catch 所接收的异常类型为引用类型
+           */
         } catch (std::invalid_argument&) {
           return false;
         }
@@ -172,6 +211,7 @@ class DataTransform : public DataTransformInterface {
       {
         // Clipping.
         if (minimum_value_ < maximum_value_) {
+          // 一般都是常量在左边。
           if (kSignedInteger == input_numeric_type_) {
             if (static_cast<int64_t>(input_data) <
                 static_cast<int64_t>(minimum_value_)) {
@@ -225,6 +265,7 @@ class DataTransform : public DataTransformInterface {
 
       // Write output.
       if (is_ascii_output_) {
+        // 存储所需要的尺寸 (sizeof ，标准并没有严格限制), sizeof 不会返回动态分配的内存大小
         if (!sptk::SnPrintf(output_data, print_format_, sizeof(buffer),
                             buffer)) {
           return false;
@@ -251,6 +292,7 @@ class DataTransform : public DataTransformInterface {
   }
 
  private:
+  //  private 继承：描述 根据基类实现出 的关系
   const std::string print_format_; // 这里定义了一个字符串叫print_format_
   // const在这里限定表示是个常量，表示这个整数是不能被修改的，就是只读的意思,
   const int num_column_;
@@ -323,9 +365,10 @@ class DataTransformWrapper {
 
     const bool is_ascii_input("a" == input_data_type);
     const bool is_ascii_output("a" == output_data_type);
-
-    // c -> *
+    // -> 等价于 (*)
+    // c -> *, -> 的左操作数指针，返回左值
     if ("c" == input_data_type && "c" == output_data_type) {
+      // 在 C++ 中通常使用 new 与 delete 来构造、销毁对象
       data_transform_ = new DataTransform<int8_t, int8_t>(
           print_format, num_column, input_numeric_type, warning_type, rounding,
           is_ascii_input, is_ascii_output);
@@ -1176,6 +1219,7 @@ class DataTransformWrapper {
   }
 
   ~DataTransformWrapper() {
+    // delete 来构造、销毁对象
     delete data_transform_;
   }
 
@@ -1184,6 +1228,7 @@ class DataTransformWrapper {
   }
 
   bool Run(std::istream* input_stream) const {
+    // 成员访问运算符（ -> ）模拟指针行为
     return IsValid() && data_transform_->Run(input_stream);
   }
 

@@ -261,7 +261,7 @@ int main(int argc, char* argv[]) {
     sptk::PrintErrorMessage("window", error_message);
     return 1;
   }
-
+  //  vector ：元素连续存储的序列容器, vector 不提供 push_front / pop_front ，可以使用 insert / erase 模拟，但效率不高, vector 容器模板：元素可变
   std::vector<double> data_sequence(input_length);
   std::vector<double> windowed_data_sequence(output_length);
 

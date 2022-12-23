@@ -71,6 +71,12 @@ class PitchExtraction {
   /**
    * @return True if this object is valid.
    */
+
+  /**
+   *
+   * 声明一般是加到头文件里面，
+   *
+   */
   bool IsValid() const {
     return (NULL != pitch_extraction_ && pitch_extraction_->IsValid());
   }
