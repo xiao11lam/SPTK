@@ -23,6 +23,7 @@
 #include <vector>     // std::vector
 
 #include "Getopt/getoptwin.h"
+// if the header file not in the current folder, we need to add the path
 #include "SPTK/analysis/pitch_extraction.h"
 #include "SPTK/utils/sptk_utils.h"
 
@@ -37,6 +38,8 @@ enum LongOptions {
 
 enum OutputFormats { kPitch = 0, kF0, kLogF0, kNumOutputFormats };
 
+// this is something from the PitchExtraction class, 这里相当于定义了一个叫kDefaultAlgorithm的对象
+// Create Object
 const sptk::PitchExtraction::Algorithms kDefaultAlgorithm(
     sptk::PitchExtraction::Algorithms::kRapt);
 const int kDefaultFrameShift(80);
@@ -162,6 +165,7 @@ int main(int argc, char* argv[]) {
 
 
 
+  // 这里有点像是一个类，区别是首先所以的元素都是public默认的，struct更多的是数据操作，定义一堆数组。
   const struct option long_options[] = {
       {"t0", required_argument, NULL, kT0},
       {"t1", required_argument, NULL, kT1},
@@ -347,7 +351,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   std::istream& input_stream(ifs.fail() ? std::cin : ifs);
-
+  // call constructor with arguments
   sptk::PitchExtraction pitch_extraction(
       frame_shift, sampling_rate_in_hz, lower_f0, upper_f0,
       voicing_thresholds[algorithm], algorithm);

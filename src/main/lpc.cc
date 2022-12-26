@@ -124,9 +124,9 @@ int main(int argc, char* argv[]) {
   int num_order(kDefaultNumOrder);
   WarningType warning_type(kDefaultWarningType);
   InputFormats input_format(kDefaultInputFormat);
-
   for (;;) {
     const int option_char(getopt_long(argc, argv, "l:m:e:q:h", NULL, NULL));
+    // // 带有冒号，: 表示参数m是可以指定值的，如 -m 100 或 -m user。
     if (-1 == option_char) break;
 
     switch (option_char) {

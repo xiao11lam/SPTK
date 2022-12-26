@@ -54,7 +54,7 @@ namespace {
 
  */
 
-
+// in enum here like give each element a ID value, 这里面给NumericType里的每一个元素相当于一个值，这样的话可以将类别类型的数据变成编号类型
 enum NumericType {
   kUnknown = 0,
   kSignedInteger,
@@ -84,7 +84,7 @@ void PrintUsage(std::ostream* stream) {
 //   std::cout << x << std::end; 这里std::out输入终端里面， c是character的意思，字符的意思。
 //   std::cin >> x; printf 是C语言的IO
 //   我们构造了一个内存流指针stream，相当于我们把这些东西都放到了*stream这个流里面了。如果对象很大的话，我们就需要。
-// 这里*stream代表了解除引用，取到该指针所指向的值。
+// 这里*stream代表了解除引用，取到该指针所指向的地址就是那块内存地址里面的值（give me the value of the pointer stream)。这里的stream 相当于一个内存地址就是0x.....，
   *stream << std::endl;
   *stream << " x2x - data type transformation" << std::endl;
   *stream << std::endl;
@@ -125,6 +125,7 @@ class DataTransformInterface {
   // public 继承：描述 是一个 的关系
   virtual ~DataTransformInterface() {
   }
+
   virtual bool Run(std::istream* input_stream) const = 0;
 };
 // 这里的;表示这个语句的结束.分号的作用是标志一个语句的结束.
@@ -142,7 +143,7 @@ template <typename T1, typename T2>
 class DataTransform : public DataTransformInterface {
  public:
 
-  // 这里先找到print_format的地址获取到了print_format的地址, & – 取地址操作符, * – 解引用操作符
+  // 这里先找到print_format的地址获取到了print_format的地址, & – 取地址操作符, * – 解引用操作符, & is refer to the address of the operator
   DataTransform(const std::string& print_format, int num_column,
                 NumericType input_numeric_type, WarningType warning_type,
                 bool rounding, bool is_ascii_input, bool is_ascii_output,
@@ -168,8 +169,9 @@ class DataTransform : public DataTransformInterface {
     // char表示基本的字符信息类型, 这里是一串字符串数组长度是kBufferSize：就是128个元素。我们要声明这个叫“char”的变量长度是kBufferSize。这是约定俗成的。
     int index(0);
     // 这里;代表空语句就是什么也不做的意思,通常和循环语句联系在一起.
-
+    // 无限循环
     for (;; ++index) {
+      // this is just a while loop, the break represents when the loop ends.
       // Read.
       T1 input_data;
       if (is_ascii_input_) {
@@ -312,15 +314,19 @@ class DataTransformWrapper {
  public:
   // 这里通过&我们相当于传入了一个空指针，这样我们又不用担心空指针的问题，这里叫引用，但是指针和引用本身就是类似的。input_data_type还是个地址。这里加上const的原因是我们不希望后面
   // 给这个值错误赋值，导致错误，不然的话编译器就会报错。
+  // this is called as call by reference instead of call by value, we pass the reference to input_data_type, 这样传值的话，这样传值的话不会新建一个内存空间
+  // 并且可以把值都传过去，相当于复制了原来的值但是没有消耗新的存储空间。
   DataTransformWrapper(const std::string& input_data_type,
                        const std::string& output_data_type,
                        const std::string& given_print_format, int num_column,
                        WarningType warning_type, bool given_rounding_flag)
+      // the NULL here is the C language way to define a null pointer here is another way to say integer number 0
       : data_transform_(NULL) {
     std::string print_format(given_print_format);
     // 所以说这里就是input_data_type的值是const不会报错。这种常量引用但是推荐的，能够快速拷贝。防止修改。一般是结构体复制成本比较高才这么搞像是const int& parm是没必要的
     // 完全可以是int param是因为int才4个字节，但是地址是8个所以这个时候没必要。
     if (print_format.empty() && "a" == output_data_type) {
+      //
       if ("c" == input_data_type || "s" == input_data_type ||
           "h" == input_data_type || "i" == input_data_type) {
         print_format = "%d";
@@ -1307,8 +1313,15 @@ class DataTransformWrapper {
 // 但是要保证类型不变就行！
 //只有两种形式！！！
 
+// argc is the number of arguments being passed into your program from the command line and argv is the array of arguments, argc 就是你输入多少个
+// 值，都是数字，1个就是1，2个就是2
+// an array of characters which like a string of the param passed into the command line
+
+
 
 int main(int argc, char* argv[]) {
+  // argc – [in] Number of arguments.
+  // argv – [in] Argument vector.
   bool rounding_flag(kDefaultRoundingFlag);
   WarningType warning_type(kDefaultWarningType);
   int num_column(kDefaultNumColumn);
@@ -1316,15 +1329,54 @@ int main(int argc, char* argv[]) {
   std::string data_types(kDefaultDataTypes);
 
   for (;;) {
-    const int option_char(getopt_long(argc, argv, "re:c:f:h", NULL, NULL));
+    /* 如果条件永不为假，则循环将变为无限循环，for循环再传统意义上可以用于实验无限循环，由于构成循环的三个表达式中何人一个都不是必须的，用户可以将某些条件表达式留空来构成一个无限循环
+
+    * 第一个句子是初始化用的，如果没有初始化的必要，就视为空语句，加上分号。
+
+        第二个句子作为判断条件，如果没有判断条件，也视为空语句，后加一个分号。这种情况，会无限循环，相当于while(1)。如果for的执行部分，就是{}之间有break语句，可以退出。
+
+        第三个句子是执行部分执行完毕再执行的语句；无则视为空语句；此时不用再加分号。
+     */
+
+    /*
+     * #include <iostream>
+
+        using namespace std;
+
+        int main{
+
+          for ( ;  ;)
+
+          {printf('this loop will run for ever.\n')
+
+          }
+
+          return 0;
+        这个就叫C++的无限循环
+        }
+     */
+    // int getopt_long(int argc, char * const argv[], const char *optstring,const struct option *longopts, int *longindex);
+    // getopt_long支持长选项的命令行解析
+    // Argc: 通过命令行传给main函数参数的个数
+    // argv: 通过命令行传给main函数参数组成的字符串指针数组
+    // optstring: 选项字符串。用来告诉getopt可以解析哪些选项，哪些选项需要参数以及函数返回值等（字符后面紧跟一个冒号则需要参数，而两个则表示参数可选）
+    // longopts: 长选项参数的名称、属性、以及解析后的返回值等结构信息
+    // longindex: 用来记录解析到的当前长选项的索引，也就是longopts的下标。
+
+          const int option_char(getopt_long(argc, argv, "re:c:f:h", NULL, NULL));
+    // getopt函数将依次检查命令行是否指定了 -c， -f， -h（这需要多次调用getopt函数，直到其返回-1），当检查到上面某一个参数被指定时，函数会返回被指定的参数名称（即该字母)
+    // 带有冒号，: 表示参数d是可以指定值的，如-f user
+    // 单个字符，表示选项, -r 后面什么也没有。
     if (-1 == option_char) break;
 
     switch (option_char) {
       case 'r': {
+        // -r bool
         rounding_flag = true;
         break;
       }
       case 'e': {
+        // -e int
         const int min(0);
         const int max(static_cast<int>(kNumWarningTypes) - 1);
         int tmp;
@@ -1340,6 +1392,7 @@ int main(int argc, char* argv[]) {
         break;
       }
       case 'c': {
+        // -c int
         if (!sptk::ConvertStringToInteger(optarg, &num_column) ||
             // num_column事实上是个值
             num_column <= 0) {
@@ -1352,6 +1405,7 @@ int main(int argc, char* argv[]) {
         break;
       }
       case 'f': {
+        // -f str
         print_format = optarg;
         if ("%" != print_format.substr(0, 1)) {
           std::ostringstream error_message;
@@ -1376,11 +1430,25 @@ int main(int argc, char* argv[]) {
 
   // 这里定义了一个const指针，这里表示不能通过修改input_file(NULL)的值来修改其指向的参数大小。
   const char* input_file(NULL);
+  // optind表示的是下一个将被处理到的参数在argv中的下标值。
   for (int i(argc - optind); 1 <= i; --i) {
     const char* arg(argv[argc - i]);
+    // strncmp(str1, str2, 1);
+    // str1, str2	-pointers to the null-terminated byte strings to compare
+    // count 1	-maximum number of characters to compare
+    // Return value: Negative value if str1 is less than str2.
+    // 0 if  str1 is equal to str2.
+    // Positive value if str1 is greater than str2.
+
     if (0 == std::strncmp(arg, "+", 1)) {
       const std::string str(arg);
+      // data_types 就是+。。那个东西
+      // "std::string::npos" means "until the end of the string", 这里相当于(1, -1)
+      // static const size_t npos = -1;
+      // The substring is the portion of the object that starts at character position 1 and spans len characters (or until the end of the string, whichever comes first).
+      // 这里相当于提取除了“+。。”，然后去掉了+号。
       data_types = str.substr(1, std::string::npos);
+      // +号后面要有两个值，如果只有一个值或者多于两个值就会报错。
       if (2 != data_types.size()) {
         std::ostringstream error_message;
         error_message << "The +type option must be two characters";

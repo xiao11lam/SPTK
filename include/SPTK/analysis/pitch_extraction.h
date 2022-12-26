@@ -14,8 +14,11 @@
 // limitations under the License.                                           //
 // ------------------------------------------------------------------------ //
 
-#ifndef SPTK_ANALYSIS_PITCH_EXTRACTION_H_
-#define SPTK_ANALYSIS_PITCH_EXTRACTION_H_
+#ifndef SPTK_ANALYSIS_PITCH_EXTRACTION_H_  // here it means if not defined, we give it a name, the name will be all in capital letter
+// it means we only need one SPTK_ANALYSIS_PITCH_EXTRACTION_H_ not many times, this defines the name of the header file
+// the logic is: if not defined, we define here
+#define SPTK_ANALYSIS_PITCH_EXTRACTION_H_  // define and undefine here is to define a variable
+
 
 #include <vector>  // std::vector
 
@@ -46,7 +49,7 @@ namespace sptk {
  *     2009.
  */
 class PitchExtraction {
- public:
+ public:  // visible outside/inside the class
   /**
    * Pitch extraction algorithm type.
    */
@@ -60,11 +63,17 @@ class PitchExtraction {
    * @param[in] voicing_threshold Threshold for determining voiced/unvoiced.
    * @param[in] algorithm Algorithm used for pitch extraction.
    */
+
+  // 这里我们叫constructor，it is a special kind of function that is automatically called when an object is created
+  // 它的名字和类的名字一模一样，而且不会返回return任何值， not even void, the purpose is to initialize the variable or allocation of the heap storage.
+  // the constructor will run automatically.
   PitchExtraction(int frame_shift, double sampling_rate, double lower_f0,
                   double upper_f0, double voicing_threshold,
                   Algorithms algorithm);
 
   virtual ~PitchExtraction() {
+    // deconstructor's name also the same.
+    // 这个叫deconstructor主要就是来清除constructor不用之后的垃圾的，释放内存的。如果不放在这里的话，内存就可能会不断使用，导致内存泄露。
     delete pitch_extraction_;
   }
 
@@ -77,6 +86,7 @@ class PitchExtraction {
    * 声明一般是加到头文件里面，
    *
    */
+
   bool IsValid() const {
     return (NULL != pitch_extraction_ && pitch_extraction_->IsValid());
   }
@@ -94,7 +104,7 @@ class PitchExtraction {
             pitch_extraction_->Get(waveform, f0, epochs, polarity));
   }
 
- private:
+ private: // visible only inside the class
   PitchExtractionInterface* pitch_extraction_;
 
   DISALLOW_COPY_AND_ASSIGN(PitchExtraction);
@@ -102,4 +112,6 @@ class PitchExtraction {
 
 }  // namespace sptk
 
+
+// this is the end of the if definition statement!
 #endif  // SPTK_ANALYSIS_PITCH_EXTRACTION_H_
